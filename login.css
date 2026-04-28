@@ -1,0 +1,257 @@
+/* ============================================================
+   NexChat — Login Page Styles
+   GitHub Dark Theme
+   ============================================================ */
+
+.auth-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: stretch;
+}
+
+/* ─── Left Panel (branding) ──────────────────────────────── */
+.auth-brand {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  padding: 64px;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  width: 44%;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* GitHub-style subtle grid bg */
+.auth-brand::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border-subtle) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.brand-logo {
+  font-family: var(--font-body);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--link);
+  margin-bottom: 14px;
+  position: relative;
+}
+.brand-logo span { color: var(--text-secondary); font-weight: 300; }
+
+.brand-tagline {
+  font-size: 1.0625rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 300px;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.brand-features { display: flex; flex-direction: column; gap: 10px; position: relative; }
+.brand-feature {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  transition: border-color var(--transition);
+}
+.brand-feature:hover { border-color: var(--border-strong); }
+.brand-feature-icon {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.brand-feature-text strong {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.brand-feature-text p {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+@media (min-width: 1024px) {
+  .auth-brand { display: flex; }
+}
+
+/* ─── Right Panel (form) ─────────────────────────────────── */
+.auth-form-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  overflow-y: auto;
+  background: var(--bg-primary);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 380px;
+}
+
+.auth-header { margin-bottom: 28px; }
+.auth-logo {
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--link);
+  margin-bottom: 8px;
+  display: none;
+}
+.auth-logo span { color: var(--text-secondary); font-weight: 300; }
+.auth-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.auth-header p { color: var(--text-secondary); font-size: 0.875rem; }
+
+@media (max-width: 1023px) {
+  .auth-logo { display: block; }
+}
+
+/* ─── Tabs ───────────────────────────────────────────────── */
+.auth-tabs {
+  display: flex;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  margin-bottom: 22px;
+  border: 1px solid var(--border);
+  gap: 2px;
+}
+.auth-tab {
+  flex: 1;
+  padding: 8px 6px;
+  text-align: center;
+  border-radius: calc(var(--radius-sm) - 1px);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  color: var(--text-muted);
+  transition: all var(--transition);
+}
+.auth-tab.active {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+/* ─── Form Sections ──────────────────────────────────────── */
+.auth-section { display: none; }
+.auth-section.active { display: flex; flex-direction: column; gap: 14px; }
+
+/* Phone input with flag */
+.phone-input-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.country-code-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0 10px;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-family: var(--font-body);
+  display: flex; align-items: center; gap: 6px;
+  white-space: nowrap;
+  transition: border-color var(--transition);
+  cursor: pointer;
+}
+.country-code-btn:hover { border-color: var(--border-strong); background: var(--bg-elevated); }
+
+/* OTP inputs */
+.otp-wrap {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.otp-input {
+  width: 46px; height: 52px;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--transition);
+}
+.otp-input:focus {
+  border-color: var(--link);
+  box-shadow: 0 0 0 3px rgba(88,166,255,0.12);
+}
+.otp-input.filled {
+  border-color: var(--accent);
+  background: rgba(35,134,54,0.08);
+  color: var(--success);
+}
+
+/* Resend */
+.resend-wrap {
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.resend-btn {
+  color: var(--link);
+  font-weight: 600;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-body);
+}
+.resend-btn:disabled { color: var(--text-muted); cursor: not-allowed; }
+
+/* Password visibility toggle */
+.password-wrap { position: relative; }
+.toggle-password {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--text-muted); font-size: 0.875rem;
+  padding: 4px;
+  transition: color var(--transition);
+}
+.toggle-password:hover { color: var(--link); }
+
+/* ─── Recaptcha ──────────────────────────────────────────── */
+#recaptcha-container { margin: 0 auto; }
+
+/* ─── Step back ──────────────────────────────────────────── */
+.step-back {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--link); font-size: 0.875rem;
+  cursor: pointer; margin-bottom: 16px;
+  transition: color var(--transition);
+}
+.step-back:hover { color: var(--link-hover); }
+
+/* ─── Terms ──────────────────────────────────────────────── */
+.terms-note {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.terms-note a { color: var(--link); }
+.terms-note a:hover { color: var(--link-hover); }

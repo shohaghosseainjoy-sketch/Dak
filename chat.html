@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111111">
+  <title>NexChat — Chats</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/chat.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ═══════ SIDEBAR ═══════ -->
+  <aside class="sidebar" id="sidebar">
+
+    <!-- Sidebar Header -->
+    <div class="sidebar-header">
+      <div class="sidebar-logo">Nex<span>Chat</span></div>
+      <div class="sidebar-actions">
+        <button class="icon-btn" onclick="openNewChat()" title="New Chat">✏️</button>
+        <button class="icon-btn" onclick="window.location.href='profile.html'" title="Profile">👤</button>
+        <button class="icon-btn" id="menu-btn" onclick="toggleSidebarMenu()" title="Menu">⋮</button>
+      </div>
+    </div>
+
+    <!-- Sidebar Context Menu -->
+    <div class="context-menu" id="sidebar-menu" style="display:none;top:56px;right:12px">
+      <div class="context-menu-item" onclick="openNewChat()">✏️ New Chat</div>
+      <div class="context-menu-item" onclick="window.location.href='profile.html'">👤 Profile</div>
+      <div class="context-menu-item" onclick="openAdminPanel()">⚙️ Admin Panel</div>
+      <div class="context-menu-item danger" onclick="Auth.logout()">🚪 Logout</div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-wrap">
+      <div class="search-input-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="search" class="search-input" id="chat-search" placeholder="Search chats..." oninput="handleChatSearch(this.value)">
+      </div>
+    </div>
+
+    <!-- Chat List -->
+    <div class="chat-list" id="chat-list">
+      <!-- Skeleton loaders -->
+      <div id="chat-list-skeleton">
+        ${[1,2,3,4,5].map(() => `
+          <div style="display:flex;gap:14px;padding:12px 20px;align-items:center">
+            <div class="skeleton" style="width:44px;height:44px;border-radius:50%;flex-shrink:0"></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+              <div class="skeleton" style="height:14px;width:70%;border-radius:4px"></div>
+              <div class="skeleton" style="height:12px;width:50%;border-radius:4px"></div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════ CHAT WINDOW ═══════ -->
+  <main class="chat-window" id="chat-window">
+
+    <!-- Welcome / Empty State -->
+    <div class="chat-welcome" id="chat-welcome">
+      <div class="chat-welcome-logo">NexChat</div>
+      <p>Select a conversation or start a new chat to begin messaging securely.</p>
+      <button class="btn btn-secondary" onclick="openNewChat()">✏️ Start New Chat</button>
+    </div>
+
+    <!-- Chat Header (hidden until chat selected) -->
+    <div class="chat-header" id="chat-header" style="display:none">
+      <button class="icon-btn chat-header-back" onclick="closeChatWindow()">←</button>
+      <div class="avatar-wrap" id="chat-header-avatar-wrap">
+        <div class="avatar" id="chat-header-avatar">?</div>
+        <div class="online-dot" id="chat-header-online-dot" style="display:none"></div>
+      </div>
+      <div class="chat-header-info" onclick="openContactInfo()">
+        <div class="chat-header-name" id="chat-header-name">—</div>
+        <div class="chat-header-status" id="chat-header-status">—</div>
+      </div>
+      <div class="chat-header-actions">
+        <button class="icon-btn" onclick="startCall('audio')" title="Voice Call">📞</button>
+        <button class="icon-btn" onclick="startCall('video')" title="Video Call">📹</button>
+        <button class="icon-btn" id="chat-menu-btn" onclick="toggleChatMenu()" title="More">⋮</button>
+      </div>
+      <!-- Chat context menu -->
+      <div class="context-menu" id="chat-menu" style="display:none;top:56px;right:12px">
+        <div class="context-menu-item" onclick="openContactInfo()">👤 View Profile</div>
+        <div class="context-menu-item" onclick="openSearchMessages()">🔍 Search Messages</div>
+        <div class="context-menu-item" onclick="blockCurrentContact()">🚫 Block User</div>
+        <div class="context-menu-item" onclick="reportCurrentContact()">⚠️ Report</div>
+        <div class="context-menu-item danger" onclick="clearChatConfirm()">🗑 Clear Chat</div>
+      </div>
+    </div>
+
+    <!-- Messages Area -->
+    <div class="messages-container" id="messages-container" style="display:none">
+      <!-- Messages rendered by JS -->
+    </div>
+
+    <!-- Typing Indicator -->
+    <div class="typing-wrap" id="typing-wrap" style="display:none">
+      <div class="typing-indicator">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+    </div>
+
+    <!-- Input Bar -->
+    <div class="input-bar" id="input-bar" style="display:none">
+      <!-- Attach Panel -->
+      <div class="attach-panel" id="attach-panel" style="display:none">
+        <div class="attach-option" onclick="triggerFileInput('image')">
+          <div class="attach-option-icon" style="background:rgba(68,170,255,0.15)">🖼</div>
+          <span>Photo</span>
+        </div>
+        <div class="attach-option" onclick="triggerFileInput('video')">
+          <div class="attach-option-icon" style="background:rgba(255,68,255,0.15)">🎬</div>
+          <span>Video</span>
+        </div>
+        <div class="attach-option" onclick="triggerFileInput('audio')">
+          <div class="attach-option-icon" style="background:rgba(68,255,136,0.15)">🎵</div>
+          <span>Audio</span>
+        </div>
+        <div class="attach-option" onclick="triggerFileInput('file')">
+          <div class="attach-option-icon" style="background:rgba(255,204,68,0.15)">📄</div>
+          <span>Document</span>
+        </div>
+        <div class="attach-option" onclick="startRecording()">
+          <div class="attach-option-icon" style="background:rgba(255,68,68,0.15)">🎤</div>
+          <span>Voice</span>
+        </div>
+        <div class="attach-option" onclick="openCamera()">
+          <div class="attach-option-icon" style="background:rgba(255,136,68,0.15)">📷</div>
+          <span>Camera</span>
+        </div>
+      </div>
+
+      <button class="attach-btn" onclick="toggleAttachPanel()" id="attach-btn">📎</button>
+
+      <div class="input-area-wrap">
+        <button class="emoji-btn" onclick="toggleEmojiPicker()">😊</button>
+        <textarea
+          class="msg-textarea"
+          id="msg-input"
+          placeholder="Message..."
+          rows="1"
+          oninput="handleInputChange(this)"
+          onkeydown="handleInputKeydown(event)"
+        ></textarea>
+      </div>
+
+      <button class="send-btn" id="send-btn" onclick="handleSendMessage()">➤</button>
+      <button class="record-btn" id="record-btn" onclick="toggleRecording()">🎤</button>
+    </div>
+
+  </main>
+</div>
+
+<!-- Hidden File Inputs -->
+<input type="file" id="file-input-image" accept="image/*" style="display:none" onchange="handleFileUpload(this, 'image')">
+<input type="file" id="file-input-video" accept="video/*" style="display:none" onchange="handleFileUpload(this, 'video')">
+<input type="file" id="file-input-audio" accept="audio/*" style="display:none" onchange="handleFileUpload(this, 'audio')">
+<input type="file" id="file-input-file" accept="*/*" style="display:none" onchange="handleFileUpload(this, 'file')">
+<input type="file" id="file-input-camera" accept="image/*" capture="environment" style="display:none" onchange="handleFileUpload(this, 'image')">
+
+<!-- New Chat Modal -->
+<div class="modal-overlay" id="new-chat-modal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">New Chat</span>
+      <button class="icon-btn" onclick="document.getElementById('new-chat-modal').style.display='none'">✕</button>
+    </div>
+    <div class="input-group" style="margin-bottom:16px">
+      <label>Search by Username or Phone</label>
+      <input type="text" class="input-field" id="user-search-input" placeholder="@username or +phone" oninput="debounce(handleUserSearch, 400)(this.value)">
+    </div>
+    <div id="user-search-results" style="min-height:60px">
+      <div class="empty-state" style="padding:24px 0">
+        <div class="empty-state-icon">🔍</div>
+        <p>Search for a user to start chatting</p>
+      </div>
+    </div>
+    <!-- Contacts List -->
+    <div style="margin-top:16px">
+      <div style="font-size:0.75rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">Your Contacts</div>
+      <div id="contacts-list">
+        <div style="color:var(--text-muted);font-size:0.875rem;padding:8px 0">Loading contacts...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Info Modal -->
+<div class="modal-overlay" id="contact-info-modal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Contact Info</span>
+      <button class="icon-btn" onclick="document.getElementById('contact-info-modal').style.display='none'">✕</button>
+    </div>
+    <div id="contact-info-content"></div>
+  </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal-overlay" id="report-modal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Report User</span>
+      <button class="icon-btn" onclick="document.getElementById('report-modal').style.display='none'">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <p style="color:var(--text-secondary);font-size:0.875rem">Select a reason for reporting this user:</p>
+      <div id="report-reasons" style="display:flex;flex-direction:column;gap:8px">
+        ${['Spam', 'Harassment', 'Inappropriate Content', 'Fake Account', 'Other'].map(r => `
+          <label style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg-tertiary);border-radius:var(--radius-md);cursor:pointer;border:1px solid var(--border)">
+            <input type="radio" name="report-reason" value="${r}" style="accent-color:white">
+            <span>${r}</span>
+          </label>
+        `).join('')}
+      </div>
+      <button class="btn btn-danger btn-full" onclick="submitReport()">Submit Report</button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Panel Modal -->
+<div class="modal-overlay" id="admin-modal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <span class="modal-title">⚙️ Admin Panel</span>
+      <button class="icon-btn" onclick="document.getElementById('admin-modal').style.display='none'">✕</button>
+    </div>
+    <div id="admin-content">Loading...</div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="js/encryption.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/users.js"></script>
+<script src="js/messaging.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/chat.js"></script>
+</body>
+</html>

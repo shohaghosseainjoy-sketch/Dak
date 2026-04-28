@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111111">
+  <title>NexChat — Sign In</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+<div class="auth-page">
+
+  <!-- Left Branding Panel -->
+  <div class="auth-brand">
+    <div>
+      <div class="brand-logo">Nex<span>Chat</span></div>
+      <p class="brand-tagline">Connect securely with anyone, anywhere — in real time.</p>
+    </div>
+    <div class="brand-features">
+      <div class="brand-feature">
+        <div class="brand-feature-icon">🔒</div>
+        <div class="brand-feature-text">
+          <strong>End-to-End Encryption</strong>
+          <p>All messages are encrypted with AES-256</p>
+        </div>
+      </div>
+      <div class="brand-feature">
+        <div class="brand-feature-icon">⚡</div>
+        <div class="brand-feature-text">
+          <strong>Real-Time Messaging</strong>
+          <p>Instant delivery powered by Firebase</p>
+        </div>
+      </div>
+      <div class="brand-feature">
+        <div class="brand-feature-icon">📎</div>
+        <div class="brand-feature-text">
+          <strong>Rich Media Sharing</strong>
+          <p>Send photos, videos, audio & files</p>
+        </div>
+      </div>
+      <div class="brand-feature">
+        <div class="brand-feature-icon">🔔</div>
+        <div class="brand-feature-text">
+          <strong>Push Notifications</strong>
+          <p>Never miss a message, even offline</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Form Panel -->
+  <div class="auth-form-panel">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo">Nex<span>Chat</span></div>
+        <h2 id="auth-title">Welcome back</h2>
+        <p id="auth-subtitle">Sign in to continue messaging</p>
+      </div>
+
+      <!-- Method Tabs -->
+      <div class="auth-tabs" id="auth-tabs">
+        <button class="auth-tab active" data-tab="phone" onclick="switchTab('phone')">📱 Phone</button>
+        <button class="auth-tab" data-tab="email" onclick="switchTab('email')">✉️ Email</button>
+        <button class="auth-tab" data-tab="register" onclick="switchTab('register')">✨ New</button>
+      </div>
+
+      <!-- ── Phone OTP Flow ── -->
+      <div class="auth-section active" id="tab-phone">
+
+        <!-- Step 1: Enter Phone -->
+        <div id="phone-step-1">
+          <div class="input-group">
+            <label>Phone Number</label>
+            <div class="phone-input-wrap">
+              <button class="country-code-btn" id="country-btn" onclick="showCountryPicker()">
+                🇧🇩 +880
+              </button>
+              <input
+                type="tel"
+                class="input-field"
+                id="phone-input"
+                placeholder="01XXXXXXXXX"
+                maxlength="15"
+                inputmode="tel"
+              >
+            </div>
+          </div>
+
+          <div id="recaptcha-container"></div>
+
+          <button class="btn btn-primary btn-full" id="send-otp-btn" onclick="handleSendOTP()">
+            Send OTP →
+          </button>
+
+          <p class="terms-note">
+            By continuing, you agree to our
+            <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          </p>
+        </div>
+
+        <!-- Step 2: Verify OTP -->
+        <div id="phone-step-2" style="display:none">
+          <div class="step-back" onclick="goBackPhoneStep()">
+            ← Back
+          </div>
+
+          <div style="text-align:center;margin-bottom:20px">
+            <div style="font-size:1.5rem;margin-bottom:8px">📲</div>
+            <p style="color:var(--text-secondary);font-size:0.875rem">
+              Enter the 6-digit code sent to<br>
+              <strong id="phone-display" style="color:var(--text-primary)"></strong>
+            </p>
+          </div>
+
+          <div class="otp-wrap">
+            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" id="otp0">
+            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" id="otp1">
+            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" id="otp2">
+            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" id="otp3">
+            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" id="otp4">
+            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" id="otp5">
+          </div>
+
+          <button class="btn btn-primary btn-full" id="verify-otp-btn" onclick="handleVerifyOTP()">
+            Verify Code →
+          </button>
+
+          <div class="resend-wrap">
+            <span id="resend-timer">Resend in <strong id="timer-count">60</strong>s</span>
+            <button class="resend-btn" id="resend-btn" onclick="handleResendOTP()" disabled style="display:none">
+              Resend OTP
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Email Login ── -->
+      <div class="auth-section" id="tab-email">
+        <div class="input-group">
+          <label>Email Address</label>
+          <input type="email" class="input-field" id="login-email" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <div class="password-wrap">
+            <input type="password" class="input-field" id="login-password" placeholder="Your password" autocomplete="current-password">
+            <button class="toggle-password" onclick="togglePassword('login-password', this)">👁</button>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="handleEmailLogin()">Sign In →</button>
+        <p style="text-align:center;font-size:0.875rem;color:var(--text-muted)">
+          Don't have an account?
+          <button style="color:var(--text-primary);font-weight:600;background:none;border:none;cursor:pointer" onclick="switchTab('register')">Register</button>
+        </p>
+      </div>
+
+      <!-- ── Register ── -->
+      <div class="auth-section" id="tab-register">
+        <div class="input-group">
+          <label>Full Name</label>
+          <input type="text" class="input-field" id="reg-name" placeholder="Your full name" autocomplete="name">
+        </div>
+        <div class="input-group">
+          <label>Email Address</label>
+          <input type="email" class="input-field" id="reg-email" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <div class="password-wrap">
+            <input type="password" class="input-field" id="reg-password" placeholder="At least 6 characters" autocomplete="new-password">
+            <button class="toggle-password" onclick="togglePassword('reg-password', this)">👁</button>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Confirm Password</label>
+          <div class="password-wrap">
+            <input type="password" class="input-field" id="reg-confirm" placeholder="Repeat password" autocomplete="new-password">
+            <button class="toggle-password" onclick="togglePassword('reg-confirm', this)">👁</button>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="handleRegister()">Create Account →</button>
+        <p class="terms-note">
+          By registering, you agree to our
+          <a href="#">Terms</a> and <a href="#">Privacy Policy</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Country Picker Modal -->
+<div class="modal-overlay" id="country-modal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal" style="max-height:70vh">
+    <div class="modal-header">
+      <span class="modal-title">Select Country</span>
+      <button class="icon-btn" onclick="document.getElementById('country-modal').style.display='none'">✕</button>
+    </div>
+    <input type="text" class="input-field" id="country-search" placeholder="Search country..." oninput="filterCountries(this.value)" style="margin-bottom:12px">
+    <div id="country-list" style="overflow-y:auto;max-height:400px"></div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="js/encryption.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/login.js"></script>
+</body>
+</html>

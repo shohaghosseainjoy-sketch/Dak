@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>NexChat — Messaging Reimagined</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/global.css">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      text-align: center;
+      padding: 24px;
+      background: var(--bg-primary);
+      overflow: hidden;
+    }
+
+    /* GitHub-style grid */
+    .bg-grid {
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(#21262d 1px, transparent 1px),
+        linear-gradient(90deg, #21262d 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+    }
+    .bg-glow {
+      position: fixed;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(35,134,54,0.06) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .splash-content {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column; align-items: center;
+      animation: splashIn 0.7s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    @keyframes splashIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .splash-icon {
+      width: 80px; height: 80px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem;
+      margin-bottom: 24px;
+      box-shadow: 0 0 40px rgba(35,134,54,0.15);
+    }
+
+    .splash-logo {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(2rem, 7vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 14px;
+      color: var(--link);
+    }
+    .splash-logo span {
+      color: var(--text-secondary);
+      font-weight: 300;
+    }
+
+    .splash-tagline {
+      font-size: clamp(0.875rem, 2.5vw, 1rem);
+      color: var(--text-secondary);
+      max-width: 360px;
+      line-height: 1.7;
+      margin-bottom: 36px;
+    }
+
+    .splash-actions {
+      display: flex; flex-direction: column; gap: 10px;
+      width: 100%; max-width: 300px;
+    }
+
+    .splash-features {
+      display: flex; gap: 20px; align-items: center;
+      margin-top: 36px;
+      flex-wrap: wrap; justify-content: center;
+    }
+    .splash-feature {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      font-family: 'Fira Code', monospace;
+    }
+
+    .splash-loader {
+      width: 100%; max-width: 280px;
+      height: 2px;
+      background: var(--border);
+      border-radius: 1px;
+      margin-top: 28px;
+      overflow: hidden;
+    }
+    .splash-loader-bar {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 1px;
+      animation: loadBar 1.8s ease-in-out forwards;
+    }
+    @keyframes loadBar {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <div class="splash-content" id="splash-main">
+    <div class="splash-icon">💬</div>
+    <h1 class="splash-logo">Nex<span>Chat</span></h1>
+    <p class="splash-tagline">Encrypted messaging for the modern world. Fast, secure, and beautifully designed.</p>
+
+    <div class="splash-actions" id="splash-actions" style="display:none">
+      <a href="login.html" class="btn btn-primary btn-full">Get Started →</a>
+      <a href="login.html" class="btn btn-secondary btn-full">Sign In</a>
+    </div>
+
+    <div class="splash-loader" id="splash-loader">
+      <div class="splash-loader-bar"></div>
+    </div>
+
+    <div class="splash-features">
+      <div class="splash-feature"><span>🔒</span><span>End-to-End Encrypted</span></div>
+      <div class="splash-feature"><span>⚡</span><span>Real-time</span></div>
+      <div class="splash-feature"><span>📱</span><span>Mobile First</span></div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="firebase-config.js" type="module"></script>
+  <script type="module">
+    import { auth } from './firebase-config.js';
+    // Auto-redirect if already logged in
+    setTimeout(() => {
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          window.location.href = 'chat.html';
+        } else {
+          document.getElementById('splash-loader').style.display = 'none';
+          document.getElementById('splash-actions').style.display = 'flex';
+        }
+      });
+    }, 1800);
+  </script>
+</body>
+</html>

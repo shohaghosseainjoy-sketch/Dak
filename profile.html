@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111111">
+  <title>NexChat — Profile</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+
+<div class="profile-page">
+
+  <!-- Top Bar -->
+  <div class="profile-topbar">
+    <button class="icon-btn" onclick="history.back()">←</button>
+    <h1>Profile & Settings</h1>
+    <button class="icon-btn" onclick="Auth.logout()" title="Logout">🚪</button>
+  </div>
+
+  <!-- Profile Hero -->
+  <div class="profile-hero">
+    <div class="avatar-upload-wrap" onclick="document.getElementById('avatar-file').click()">
+      <div class="avatar avatar-xl" id="profile-avatar" style="background:#333">?</div>
+      <div class="avatar-upload-overlay">📷</div>
+    </div>
+    <input type="file" id="avatar-file" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)">
+    <div class="profile-name-display" id="profile-name">Loading...</div>
+    <div class="profile-username-display" id="profile-username">@...</div>
+    <div class="profile-bio-display" id="profile-bio">—</div>
+    <div class="profile-phone-display" id="profile-phone" style="display:none">
+      <span>📞</span><span id="profile-phone-text"></span>
+    </div>
+  </div>
+
+  <!-- Edit Profile Section -->
+  <div class="settings-section">
+    <div class="settings-section-title">Account</div>
+    <div class="settings-group">
+      <div class="settings-item" onclick="openEditModal('name')">
+        <div class="settings-item-icon">✏️</div>
+        <div class="settings-item-content">
+          <div class="settings-item-label">Display Name</div>
+          <div class="settings-item-sub" id="edit-name-sub">—</div>
+        </div>
+        <div class="settings-item-right"><span class="settings-chevron">›</span></div>
+      </div>
+      <div class="settings-item" onclick="openEditModal('username')">
+        <div class="settings-item-icon">@</div>
+        <div class="settings-item-content">
+          <div class="settings-item-label">Username</div>
+          <div class="settings-item-sub" id="edit-username-sub">—</div>
+        </div>
+        <div class="settings-item-right"><span class="settings-chevron">›</span></div>
+      </div>
+      <div class="settings-item" onclick="openEditModal('bio')">
+        <div class="settings-item-icon">📝</div>
+        <div class="settings-item-content">
+          <div class="settings-item-label">Bio</div>
+          <div class="settings-item-sub" id="edit-bio-sub">—</div>
+        </div>
+        <div class="settings-item-right"><span class="settings-chevron">›</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifications Section -->
+  <div class="settings-section">
+    <div class="settings-section-title">Notifications</div>
+    <div class="settings-group">
+      <div class="settings-item">
+        <div class="settings-item-icon">🔔</div>
+        <div class="settings-item-content">
+          <div class="settings-item-label">Push Notifications</div>
+          <div class="settings-item-sub">Get notified of new messages</div>
+        </div>
+        <div class="settings-item-right">
+          <div class="toggle-switch" id="notif-toggle" onclick="toggleSetting('notifications', this)"></div>
+        </div>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-icon">👁</div>
+        <div class="settings-item-content">
+          <div class="settings-item-label">Read Receipts</div>
+          <div class="settings-item-sub">Show when you've read messages</div>
+        </div>
+        <div class="settings-item-right">
+          <div class="toggle-switch" id="receipts-toggle" onclick="toggleSetting('readReceipts', this)"></div>
+        </div>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-icon">🔊</div>
+        <div class="settings-item-content">
+          <div class="settings-item-label">Sound</div>
+          <div class="settings-item-sub">Play sounds for new messages</div>
+        </div>
+        <div class="settings-item-right">
+          <div class="toggle-switch on" id="sound-toggle" onclick="toggleSetting('sound', this)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Privacy Section -->
+  <div class="settings-section">
+    <div class="settings-section-title">Privacy</div>
+    <div class="settings-group">
+      <div class="settings-item" onclick="openBlockedList()">
+        <div class="settings-item-icon">🚫</div>
+        <div class="settings-item-content">
+          <div class="settings-item-label">Blocked Users</div>
+          <div class="settings-item-sub" id="blocked-count-sub">Manage blocked contacts</div>
+        </div>
+        <div class="settings-item-right"><span class="settings-chevron">›</span></div>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-icon">🕒</div>
+        <div class="settings-item-content">
+          <div class="settings-item-label">Last Seen</div>
+          <div class="settings-item-sub">Show your last seen time</div>
+        </div>
+        <div class="settings-item-right">
+          <div class="toggle-switch on" id="lastseen-toggle" onclick="toggleSetting('lastSeen', this)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Security Section -->
+  <div class="settings-section">
+    <div class="settings-section-title">Security</div>
+    <div class="settings-group">
+      <div class="settings-item" onclick="showEncryptionInfo()">
+        <div class="settings-item-icon">🔒</div>
+        <div class="settings-item-content">
+          <div class="settings-item-label">Encryption</div>
+          <div class="settings-item-sub">End-to-end encrypted chats</div>
+        </div>
+        <div class="settings-item-right">
+          <span style="font-size:0.75rem;color:var(--success)">Active</span>
+          <span class="settings-chevron">›</span>
+        </div>
+      </div>
+      <div class="settings-item" onclick="changePassword()">
+        <div class="settings-item-icon">🔑</div>
+        <div class="settings-item-content">
+          <div class="settings-item-label">Change Password</div>
+          <div class="settings-item-sub">Update your account password</div>
+        </div>
+        <div class="settings-item-right"><span class="settings-chevron">›</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- About Section -->
+  <div class="settings-section">
+    <div class="settings-section-title">About</div>
+    <div class="settings-group">
+      <div class="settings-item" onclick="showAbout()">
+        <div class="settings-item-icon">ℹ️</div>
+        <div class="settings-item-content">
+          <div class="settings-item-label">About NexChat</div>
+          <div class="settings-item-sub">Version 1.0.0</div>
+        </div>
+        <div class="settings-item-right"><span class="settings-chevron">›</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Danger Zone -->
+  <div class="settings-section danger-zone">
+    <div class="settings-section-title">Danger Zone</div>
+    <div class="settings-group">
+      <div class="settings-item" onclick="confirmDeleteAccount()">
+        <div class="settings-item-icon">⚠️</div>
+        <div class="settings-item-content">
+          <div class="settings-item-label">Delete Account</div>
+          <div class="settings-item-sub">Permanently delete your account and data</div>
+        </div>
+        <div class="settings-item-right"><span class="settings-chevron">›</span></div>
+      </div>
+      <div class="settings-item" onclick="Auth.logout()">
+        <div class="settings-item-icon">🚪</div>
+        <div class="settings-item-content">
+          <div class="settings-item-label">Logout</div>
+          <div class="settings-item-sub">Sign out of your account</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:32px"></div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="edit-modal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="edit-modal-title">Edit</span>
+      <button class="icon-btn" onclick="document.getElementById('edit-modal').style.display='none'">✕</button>
+    </div>
+    <div class="edit-form">
+      <div class="input-group">
+        <label id="edit-field-label">Value</label>
+        <textarea class="input-field" id="edit-field-input" rows="3" style="resize:none"></textarea>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Blocked Users Modal -->
+<div class="modal-overlay" id="blocked-modal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Blocked Users</span>
+      <button class="icon-btn" onclick="document.getElementById('blocked-modal').style.display='none'">✕</button>
+    </div>
+    <div id="blocked-list-content">Loading...</div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="js/encryption.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/users.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/profile.js"></script>
+</body>
+</html>
